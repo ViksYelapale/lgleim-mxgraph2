@@ -1,7 +1,6 @@
 .classpath
 .idea/
 .jshintrc
-.jshintrc
 .project
 .settings
 .vs
@@ -14,6 +13,8 @@ dotnet/
 etc/
 index.html
 java/
+javascript/debug/
+javascript/devel/
 javascript/examples/*
 javascript/index.html
 javascript/src/

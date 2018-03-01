@@ -24,9 +24,10 @@ cp -v $BUILD/jgraphx.zip $WEBROOT/downloads/jgraphx/archive/jgraphx-$VERSION.zip
 cp -v $BUILD/mxgraph-distro.zip $WEBROOT/downloads/mx2/mxgraph-$VERSION.zip
 cp -v $BUILD/ChangeLog $WEBROOT/
 
-# Update mxgraph on github
 echo
 echo "Updating mxgraph and mxgraph-js on github..."
+
+# Construct new public release
 cd ~
 date=`date +"%H%M%S%d%m%y"`
 mkdir tmp-$date
@@ -34,20 +35,6 @@ cd tmp-$date
 cp $BUILD/mxgraph-distro.zip .
 mkdir tmp
 unzip -qq mxgraph-distro.zip -d tmp
-git clone git@github.com:jgraph/mxgraph.git
-
-# Publish to NPM
-sed "s/@VERSION@/$DOTVERSION/" $BUILD/../etc/build/mxgraph-package.json > tmp/mxgraph/package.json
-mkdir -p tmp/mxgraph/etc/build
-cp -v $BUILD/../etc/build/Gruntfile.js tmp/mxgraph/etc/build/
-cp -v $BUILD/../etc/build/.npmignore tmp/mxgraph/
-cd tmp/mxgraph
-npm install
-npm publish --access public
-cd ../..
-
-cp mxgraph/README.md tmp/mxgraph
-cp mxgraph/LICENSE tmp/mxgraph
 cd tmp/mxgraph/javascript/
 mv src/js/mxClient.js mxClient.min.js
 mv debug/js/mxClient.js .
@@ -55,6 +42,17 @@ rm -rf debug
 unzip -qq devel/source.zip
 rm -rf devel
 cd -
+
+# Github repo specific files
+git clone git@github.com:jgraph/mxgraph.git
+cp mxgraph/README.md tmp/mxgraph
+cp mxgraph/LICENSE tmp/mxgraph
+cp -v $BUILD/../etc/build/.npmignore tmp/mxgraph/
+sed "s/@VERSION@/$DOTVERSION/" $BUILD/../etc/build/mxgraph-package.json > tmp/mxgraph/package.json
+mkdir -p tmp/mxgraph/etc/build
+cp -v $BUILD/../etc/build/Gruntfile.js tmp/mxgraph/etc/build/
+
+# Update mxgraph on github
 rm -rf mxgraph/*
 cp -rf tmp/mxgraph/* mxgraph/
 cd mxgraph
@@ -63,6 +61,10 @@ git commit -am "$DOTVERSION release"
 git push origin master
 git tag -a v$DOTVERSION -m "v$DOTVERSION"
 git push origin --tags
+
+# Publish mxgraph to NPM
+npm install
+npm publish --access public
 cd ..
 
 # Copy selected resources to mxgraph-js and generate package.json

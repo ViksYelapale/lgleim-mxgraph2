@@ -55,6 +55,7 @@ cp -v $BUILD/../etc/build/Gruntfile.js tmp/mxgraph/etc/build/
 # Update mxgraph on github
 rm -rf mxgraph/*
 cp -rf tmp/mxgraph/* mxgraph/
+cp -v $BUILD/../etc/build/.npmignore mxgraph/
 cd mxgraph
 git add .
 git commit -am "$DOTVERSION release"
